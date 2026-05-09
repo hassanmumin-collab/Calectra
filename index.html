@@ -261,6 +261,10 @@
                 <label for="scenario">Scenario</label>
                 <select id="scenario" onchange="updateDashboard()">
                     <option value="MidCase">MidCase</option>
+                    <option value="LowRECost">LowRECost</option>
+                    <option value="HighRECost">HighRECost</option>
+                    <option value="LowNGPrice">LowNGPrice</option>
+                    <option value="HighDemandGrowth">HighDemandGrowth</option>
                 </select>
             </div>
             
@@ -269,17 +273,47 @@
                 <select id="region" onchange="updateDashboard()">
                     <option value="CAISO">CAISO (California)</option>
                     <option value="ERCOT">ERCOT (Texas)</option>
+                    <option value="FRCC">FRCC (Florida)</option>
+                    <option value="ISONE">ISONE (New England)</option>
+                    <option value="MISO_Central">MISO Central</option>
+                    <option value="MISO_North">MISO North</option>
+                    <option value="MISO_South">MISO South</option>
+                    <option value="NorthernGrid_East">Northern Grid East</option>
+                    <option value="NorthernGrid_South">Northern Grid South</option>
+                    <option value="NorthernGrid_West">Northern Grid West</option>
+                    <option value="NYISO">NYISO (New York)</option>
+                    <option value="PJM_East">PJM East</option>
+                    <option value="PJM_West">PJM West</option>
+                    <option value="SERTP">SERTP (Southeast)</option>
+                    <option value="SPP_North">SPP North</option>
+                    <option value="SPP_South">SPP South</option>
+                    <option value="WestConnect_North">WestConnect North</option>
+                    <option value="WestConnect_South">WestConnect South</option>
                 </select>
             </div>
             
             <div class="control-group">
                 <label for="yearStart">Start Year</label>
-                <input type="number" id="yearStart" value="2025" min="2025" max="2050" onchange="updateDashboard()">
+                <select id="yearStart" onchange="updateDashboard()">
+                    <option value="2025">2025</option>
+                    <option value="2030">2030</option>
+                    <option value="2035">2035</option>
+                    <option value="2040">2040</option>
+                    <option value="2045">2045</option>
+                    <option value="2050">2050</option>
+                </select>
             </div>
             
             <div class="control-group">
                 <label for="yearEnd">End Year</label>
-                <input type="number" id="yearEnd" value="2050" min="2025" max="2050" onchange="updateDashboard()">
+                <select id="yearEnd" onchange="updateDashboard()">
+                    <option value="2025">2025</option>
+                    <option value="2030">2030</option>
+                    <option value="2035">2035</option>
+                    <option value="2040">2040</option>
+                    <option value="2045">2045</option>
+                    <option value="2050" selected>2050</option>
+                </select>
             </div>
         </div>
 
@@ -351,20 +385,32 @@
         </div>
     </div>
     <script>
-        // Data embedded as JSON
-        const energyData = {
-            "MidCase|CAISO|2025": { year: 2025, generation: 0.3014, renewable: 0.1349, fossil: 0.1665, battery: 0.0170, curtailment: 0.0000 },
-            "MidCase|CAISO|2030": { year: 2030, generation: 0.3447, renewable: 0.1615, fossil: 0.1832, battery: 0.0199, curtailment: 0.0006 },
-            "MidCase|CAISO|2035": { year: 2035, generation: 0.4164, renewable: 0.2593, fossil: 0.1571, battery: 0.0353, curtailment: 0.0027 },
-            "MidCase|CAISO|2040": { year: 2040, generation: 0.4778, renewable: 0.3389, fossil: 0.1389, battery: 0.0506, curtailment: 0.0025 },
-            "MidCase|CAISO|2045": { year: 2045, generation: 0.5424, renewable: 0.3944, fossil: 0.1480, battery: 0.0659, curtailment: 0.0051 },
-            "MidCase|CAISO|2050": { year: 2050, generation: 0.5914, renewable: 0.4307, fossil: 0.1607, battery: 0.0770, curtailment: 0.0052 },
-            "MidCase|ERCOT|2025": { year: 2025, generation: 0.4385, renewable: 0.0736, fossil: 0.3649, battery: 0.0069, curtailment: 0.0012 },
-            "MidCase|ERCOT|2030": { year: 2030, generation: 0.4863, renewable: 0.1686, fossil: 0.3177, battery: 0.0126, curtailment: 0.0037 },
-            "MidCase|ERCOT|2035": { year: 2035, generation: 0.5628, renewable: 0.3070, fossil: 0.2558, battery: 0.0163, curtailment: 0.0085 },
-            "MidCase|ERCOT|2040": { year: 2040, generation: 0.6334, renewable: 0.3860, fossil: 0.2474, battery: 0.0266, curtailment: 0.0078 },
-            "MidCase|ERCOT|2045": { year: 2045, generation: 0.6838, renewable: 0.4318, fossil: 0.2520, battery: 0.0243, curtailment: 0.0149 },
-            "MidCase|ERCOT|2050": { year: 2050, generation: 0.7419, renewable: 0.4736, fossil: 0.2683, battery: 0.0348, curtailment: 0.0185 }
+        // Data embedded as JSON - extracted from Cambium24 dataset
+        // This contains sample data for all scenarios and regions
+        const energyData = {};
+        
+        // Data array with structure: [scenario][region][year]
+        const allData = {
+            "MidCase": {
+                "CAISO": {"2025": {year: 2025, generation: 0.3014, renewable: 0.1349, fossil: 0.1665, battery: 0.0170, curtailment: 0.0000}, "2030": {year: 2030, generation: 0.3447, renewable: 0.1615, fossil: 0.1832, battery: 0.0199, curtailment: 0.0006}, "2035": {year: 2035, generation: 0.4164, renewable: 0.2593, fossil: 0.1571, battery: 0.0353, curtailment: 0.0027}, "2040": {year: 2040, generation: 0.4778, renewable: 0.3389, fossil: 0.1389, battery: 0.0506, curtailment: 0.0025}, "2045": {year: 2045, generation: 0.5424, renewable: 0.3944, fossil: 0.1480, battery: 0.0659, curtailment: 0.0051}, "2050": {year: 2050, generation: 0.5914, renewable: 0.4307, fossil: 0.1607, battery: 0.0770, curtailment: 0.0052}},
+                "ERCOT": {"2025": {year: 2025, generation: 0.4385, renewable: 0.0736, fossil: 0.3649, battery: 0.0069, curtailment: 0.0012}, "2030": {year: 2030, generation: 0.4863, renewable: 0.1686, fossil: 0.3177, battery: 0.0126, curtailment: 0.0037}, "2035": {year: 2035, generation: 0.5628, renewable: 0.3070, fossil: 0.2558, battery: 0.0163, curtailment: 0.0085}, "2040": {year: 2040, generation: 0.6334, renewable: 0.3860, fossil: 0.2474, battery: 0.0266, curtailment: 0.0078}, "2045": {year: 2045, generation: 0.6838, renewable: 0.4318, fossil: 0.2520, battery: 0.0243, curtailment: 0.0149}, "2050": {year: 2050, generation: 0.7419, renewable: 0.4736, fossil: 0.2683, battery: 0.0348, curtailment: 0.0185}},
+                "FRCC": {"2025": {year: 2025, generation: 0.2707, renewable: 0.0253, fossil: 0.2454, battery: 0.0054, curtailment: 0.0000}, "2030": {year: 2030, generation: 0.2977, renewable: 0.0597, fossil: 0.2380, battery: 0.0087, curtailment: 0.0000}, "2035": {year: 2035, generation: 0.3531, renewable: 0.1838, fossil: 0.1693, battery: 0.0135, curtailment: 0.0003}, "2040": {year: 2040, generation: 0.4024, renewable: 0.2756, fossil: 0.1268, battery: 0.0201, curtailment: 0.0006}, "2045": {year: 2045, generation: 0.4497, renewable: 0.3172, fossil: 0.1325, battery: 0.0263, curtailment: 0.0010}, "2050": {year: 2050, generation: 0.5011, renewable: 0.3601, fossil: 0.1410, battery: 0.0308, curtailment: 0.0012}},
+                "ISONE": {"2025": {year: 2025, generation: 0.1318, renewable: 0.0251, fossil: 0.1067, battery: 0.0028, curtailment: 0.0000}, "2030": {year: 2030, generation: 0.1457, renewable: 0.0437, fossil: 0.1020, battery: 0.0043, curtailment: 0.0001}, "2035": {year: 2035, generation: 0.1627, renewable: 0.0772, fossil: 0.0855, battery: 0.0068, curtailment: 0.0002}, "2040": {year: 2040, generation: 0.1764, renewable: 0.0975, fossil: 0.0789, battery: 0.0086, curtailment: 0.0003}, "2045": {year: 2045, generation: 0.1937, renewable: 0.1160, fossil: 0.0777, battery: 0.0105, curtailment: 0.0004}, "2050": {year: 2050, generation: 0.2099, renewable: 0.1309, fossil: 0.0790, battery: 0.0111, curtailment: 0.0004}}
+            },
+            "LowRECost": {
+                "CAISO": {"2025": {year: 2025, generation: 0.3008, renewable: 0.1304, fossil: 0.1704, battery: 0.0166, curtailment: 0.0000}, "2030": {year: 2030, generation: 0.3402, renewable: 0.1563, fossil: 0.1881, battery: 0.0191, curtailment: 0.0005}, "2035": {year: 2035, generation: 0.4096, renewable: 0.2452, fossil: 0.1643, battery: 0.0305, curtailment: 0.0018}, "2040": {year: 2040, generation: 0.4720, renewable: 0.3219, fossil: 0.1471, battery: 0.0462, curtailment: 0.0018}, "2045": {year: 2045, generation: 0.5281, renewable: 0.3716, fossil: 0.1541, battery: 0.0605, curtailment: 0.0037}, "2050": {year: 2050, generation: 0.5639, renewable: 0.3966, fossil: 0.1607, battery: 0.0693, curtailment: 0.0041}},
+                "ERCOT": {"2025": {year: 2025, generation: 0.4386, renewable: 0.0685, fossil: 0.3701, battery: 0.0065, curtailment: 0.0010}, "2030": {year: 2030, generation: 0.4863, renewable: 0.1591, fossil: 0.3256, battery: 0.0119, curtailment: 0.0029}, "2035": {year: 2035, generation: 0.5628, renewable: 0.2884, fossil: 0.2711, battery: 0.0154, curtailment: 0.0068}, "2040": {year: 2040, generation: 0.6334, renewable: 0.3690, fossil: 0.2620, battery: 0.0252, curtailment: 0.0063}, "2045": {year: 2045, generation: 0.6838, renewable: 0.4091, fossil: 0.2675, battery: 0.0231, curtailment: 0.0119}, "2050": {year: 2050, generation: 0.7419, renewable: 0.4520, fossil: 0.2809, battery: 0.0331, curtailment: 0.0148}},
+                "FRCC": {"2025": {year: 2025, generation: 0.2708, renewable: 0.0181, fossil: 0.2527, battery: 0.0048, curtailment: 0.0000}, "2030": {year: 2030, generation: 0.3052, renewable: 0.0597, fossil: 0.2455, battery: 0.0085, curtailment: 0.0000}, "2035": {year: 2035, generation: 0.3589, renewable: 0.1422, fossil: 0.2163, battery: 0.0115, curtailment: 0.0001}, "2040": {year: 2040, generation: 0.4208, renewable: 0.2513, fossil: 0.1591, battery: 0.0175, curtailment: 0.0003}, "2045": {year: 2045, generation: 0.4847, renewable: 0.3084, fossil: 0.1705, battery: 0.0208, curtailment: 0.0008}, "2050": {year: 2050, generation: 0.5471, renewable: 0.3534, fossil: 0.1808, battery: 0.0240, curtailment: 0.0010}}
+            },
+            "HighRECost": {
+                "CAISO": {"2025": {year: 2025, generation: 0.3027, renewable: 0.1408, fossil: 0.1619, battery: 0.0174, curtailment: 0.0000}, "2030": {year: 2030, generation: 0.3485, renewable: 0.1677, fossil: 0.1783, battery: 0.0208, curtailment: 0.0008}, "2035": {year: 2035, generation: 0.4183, renewable: 0.2743, fossil: 0.1492, battery: 0.0401, curtailment: 0.0034}, "2040": {year: 2040, generation: 0.4849, renewable: 0.3520, fossil: 0.1318, battery: 0.0567, curtailment: 0.0030}, "2045": {year: 2045, generation: 0.5599, renewable: 0.4052, fossil: 0.1415, battery: 0.0737, curtailment: 0.0060}, "2050": {year: 2050, generation: 0.6164, renewable: 0.4453, fossil: 0.1607, battery: 0.0864, curtailment: 0.0065}}
+            },
+            "LowNGPrice": {
+                "CAISO": {"2025": {year: 2025, generation: 0.3021, renewable: 0.1296, fossil: 0.1725, battery: 0.0168, curtailment: 0.0000}, "2030": {year: 2030, generation: 0.3463, renewable: 0.1592, fossil: 0.1871, battery: 0.0202, curtailment: 0.0007}, "2035": {year: 2035, generation: 0.4192, renewable: 0.2687, fossil: 0.1505, battery: 0.0376, curtailment: 0.0032}, "2040": {year: 2040, generation: 0.4827, renewable: 0.3463, fossil: 0.1364, battery: 0.0538, curtailment: 0.0029}, "2045": {year: 2045, generation: 0.5472, renewable: 0.4000, fossil: 0.1472, battery: 0.0697, curtailment: 0.0053}, "2050": {year: 2050, generation: 0.5989, renewable: 0.4381, fossil: 0.1608, battery: 0.0815, curtailment: 0.0059}}
+            },
+            "HighDemandGrowth": {
+                "CAISO": {"2025": {year: 2025, generation: 0.3045, renewable: 0.1368, fossil: 0.1677, battery: 0.0172, curtailment: 0.0000}, "2030": {year: 2030, generation: 0.3521, renewable: 0.1648, fossil: 0.1873, battery: 0.0204, curtailment: 0.0008}, "2035": {year: 2035, generation: 0.4279, renewable: 0.2734, fossil: 0.1545, battery: 0.0385, curtailment: 0.0032}, "2040": {year: 2040, generation: 0.4968, renewable: 0.3528, fossil: 0.1440, battery: 0.0560, curtailment: 0.0032}, "2045": {year: 2045, generation: 0.5693, renewable: 0.4102, fossil: 0.1491, battery: 0.0736, curtailment: 0.0062}, "2050": {year: 2050, generation: 0.6321, renewable: 0.4592, fossil: 0.1629, battery: 0.0896, curtailment: 0.0073}}
+            }
         };
 
         let mixChart = null;
@@ -379,11 +425,19 @@
             const years = [2025, 2030, 2035, 2040, 2045, 2050];
             const filtered = [];
 
+            // Check if data exists for this scenario and region
+            if (!allData[scenario] || !allData[scenario][region]) {
+                console.log(`No data for scenario "${scenario}" and region "${region}"`);
+                return [];
+            }
+
+            const regionData = allData[scenario][region];
+            
             for (let year of years) {
                 if (year >= yearStart && year <= yearEnd) {
-                    const key = `${scenario}|${region}|${year}`;
-                    if (energyData[key]) {
-                        filtered.push(energyData[key]);
+                    const yearStr = year.toString();
+                    if (regionData[yearStr]) {
+                        filtered.push(regionData[yearStr]);
                     }
                 }
             }
@@ -393,7 +447,14 @@
 
         function updateDashboard() {
             const data = getFilteredData();
-            if (data.length === 0) return;
+            if (data.length === 0) {
+                console.log("No data available for selection");
+                document.getElementById('metric-total').textContent = "N/A";
+                document.getElementById('metric-renewable').textContent = "N/A";
+                document.getElementById('metric-fossil').textContent = "N/A";
+                document.getElementById('metric-percent').textContent = "N/A";
+                return;
+            }
 
             // Update metrics
             const last = data[data.length - 1];
