@@ -339,7 +339,7 @@
 
         <!-- Energy Mix Chart -->
         <div class="chart-container">
-            <h2>Energy Mix: Total Generation vs Renewable</h2>
+            <h2>Energy Mix Analysis: Renewable vs Total Generation with Storage & Curtailment</h2>
             <div class="chart-wrapper">
                 <canvas id="mixChart"></canvas>
             </div>
@@ -7678,36 +7678,86 @@
                     labels: data.map(d => d.year),
                     datasets: [
                         {
-                            label: 'Renewable',
+                            label: 'Renewable Energy',
                             data: data.map(d => d.renewable),
                             backgroundColor: '#22c55e',
                             borderRadius: 6,
-                            borderSkipped: false
+                            borderSkipped: false,
+                            yAxisID: 'y',
+                            order: 2
                         },
                         {
-                            label: 'Fossil & Other',
-                            data: data.map(d => d.fossil),
-                            backgroundColor: '#f97316',
+                            label: 'Total Generation (Fossil + Renewable)',
+                            data: data.map(d => d.generation),
+                            backgroundColor: 'rgba(59, 130, 246, 0.6)',
                             borderRadius: 6,
-                            borderSkipped: false
+                            borderSkipped: false,
+                            yAxisID: 'y',
+                            order: 3
+                        },
+                        {
+                            label: 'Battery Storage',
+                            data: data.map(d => d.battery),
+                            borderColor: '#a855f7',
+                            backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                            borderWidth: 3,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#a855f7',
+                            type: 'line',
+                            tension: 0.4,
+                            fill: false,
+                            yAxisID: 'y1',
+                            order: 1
+                        },
+                        {
+                            label: 'Curtailment',
+                            data: data.map(d => d.curtailment),
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            borderWidth: 3,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#ef4444',
+                            type: 'line',
+                            tension: 0.4,
+                            fill: false,
+                            yAxisID: 'y1',
+                            order: 1
                         }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
                     plugins: {
                         legend: {
                             display: true,
                             position: 'top',
-                            labels: { usePointStyle: true, padding: 15 }
+                            labels: { usePointStyle: true, padding: 15, font: { size: 12 } }
+                        },
+                        title: {
+                            display: false
                         }
                     },
                     scales: {
                         x: { stacked: false },
                         y: { 
-                            stacked: false,
-                            title: { display: true, text: 'Generation (TWh)' }
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: { display: true, text: 'Generation (TWh)', font: { weight: 'bold' } },
+                            stacked: false
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: { display: true, text: 'Battery & Curtailment (TWh)', font: { weight: 'bold' } },
+                            grid: { drawOnChartArea: false },
+                            stacked: false
                         }
                     }
                 }
