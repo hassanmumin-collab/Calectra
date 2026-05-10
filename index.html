@@ -348,13 +348,7 @@
             </div>
         </div>
 
-        <!-- Renewable Trends Chart -->
-        <div class="chart-container">
-            <h2>Renewable Energy Trends</h2>
-            <div class="chart-wrapper">
-                <canvas id="trendsChart"></canvas>
-            </div>
-        </div>
+
 
         <!-- Data Table -->
         <div class="chart-container">
@@ -7611,7 +7605,6 @@
 ;
 
         let mixChart = null;
-        let trendsChart = null;
 
         function getFilteredData() {
             const scenario = document.getElementById('scenario').value;
@@ -7663,7 +7656,6 @@
 
             // Update charts
             updateMixChart(data);
-            updateTrendsChart(data);
             updateTable(data);
         }
 
@@ -7764,70 +7756,7 @@
             });
         }
 
-        function updateTrendsChart(data) {
-            const ctx = document.getElementById('trendsChart').getContext('2d');
-            
-            if (trendsChart) trendsChart.destroy();
-            
-            trendsChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: data.map(d => d.year),
-                    datasets: [
-                        {
-                            label: 'Renewable Generation',
-                            data: data.map(d => d.renewable),
-                            borderColor: '#22c55e',
-                            backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                            tension: 0.4,
-                            fill: true,
-                            borderWidth: 3,
-                            pointRadius: 5,
-                            pointBackgroundColor: '#22c55e'
-                        },
-                        {
-                            label: 'Battery Storage',
-                            data: data.map(d => d.battery),
-                            borderColor: '#a855f7',
-                            backgroundColor: 'rgba(168, 85, 247, 0.1)',
-                            tension: 0.4,
-                            fill: true,
-                            borderWidth: 3,
-                            pointRadius: 5,
-                            pointBackgroundColor: '#a855f7'
-                        },
-                        {
-                            label: 'Curtailment',
-                            data: data.map(d => d.curtailment),
-                            borderColor: '#ef4444',
-                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                            tension: 0.4,
-                            fill: true,
-                            borderWidth: 3,
-                            pointRadius: 5,
-                            pointBackgroundColor: '#ef4444'
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top',
-                            labels: { usePointStyle: true, padding: 15 }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: { display: true, text: 'Energy (TWh)' }
-                        }
-                    }
-                }
-            });
-        }
+
 
         function updateTable(data) {
             const tbody = document.getElementById('tableBody');
