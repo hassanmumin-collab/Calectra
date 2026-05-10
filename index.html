@@ -263,8 +263,11 @@
                     <option value="MidCase">MidCase</option>
                     <option value="LowRECost">LowRECost</option>
                     <option value="HighRECost">HighRECost</option>
-                    <option value="LowNGPrice">LowNGPrice</option>
                     <option value="HighDemandGrowth">HighDemandGrowth</option>
+                    <option value="LowNGPrice">LowNGPrice</option>
+                    <option value="HighNGPrice">HighNGPrice</option>
+                    <option value="LowRECost_HighNGPrice">LowRECost_HighNGPrice</option>
+                    <option value="HighRECost_LowNGPrice">HighRECost_LowNGPrice</option>
                 </select>
             </div>
             
@@ -387,9 +390,6 @@
     <script>
         // Data embedded as JSON - extracted from Cambium24 dataset
         // This contains sample data for all scenarios and regions
-        const energyData = {};
-        
-        // Data array with structure: [scenario][region][year]
         const allData = {
     "HighDemandGrowth":  {
                              "SPP_South":  {
@@ -7609,6 +7609,10 @@
                   }
 }
 ;
+                               }
+                  }
+}
+;
 
         let mixChart = null;
         let trendsChart = null;
@@ -7864,4 +7868,3 @@
     </script>
 </body>
 </html>
-
